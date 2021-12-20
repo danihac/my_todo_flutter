@@ -57,20 +57,17 @@ class _TodoViewState extends State<TodoView> {
         ));
   }
 
-  void _addNewTask(String text, int priority) {
-    _todoRepository.addNewItem(TodoModel(text: text, priority: priority));
-  }
-
-  void _addNewTaskWithAnimation(String text, int priority) {
+  void _addNewTask(String text, int priority, BuildContext ctx) {
     // TODO: add animation
     _todoRepository.addNewItem(TodoModel(text: text, priority: priority));
+    Navigator.of(ctx).pop();
   }
 
   void _startAddingNewTask(BuildContext ctx) {
     showModalBottomSheet(
         context: ctx,
         isScrollControlled: true,
-        builder: (_) {
+        builder: (context) {
           return Padding(
             padding: MediaQuery.of(context).viewInsets,
             child: Container(
@@ -79,7 +76,7 @@ class _TodoViewState extends State<TodoView> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  TodoAddNewItem(_addNewTaskWithAnimation),
+                  TodoAddNewItem(addTodoFn: _addNewTask),
                 ],
               ),
             ),

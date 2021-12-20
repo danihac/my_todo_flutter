@@ -1,11 +1,12 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 class TodoAddNewItem extends StatefulWidget {
-  final Function(String text, int priority) addTodoFn;
+  final Function(String text, int priority, BuildContext ctx) addTodoFn;
 
-  const TodoAddNewItem(this.addTodoFn, {Key? key}) : super(key: key);
+  const TodoAddNewItem({Key? key, required this.addTodoFn}) : super(key: key);
 
   @override
   State<TodoAddNewItem> createState() => _TodoAddNewItemState();
@@ -27,22 +28,35 @@ class _TodoAddNewItemState extends State<TodoAddNewItem> {
           'Add new task to yours todo list 😁',
           overflow: TextOverflow.ellipsis,
         ),
-        TextField(
+        const SizedBox(height: 10),
+        CupertinoTextField(
           controller: _textController,
-          decoration: const InputDecoration(hintText: 'Add task'),
+          autofocus: true,
+          autocorrect: true,
+          placeholder: 'Add task',
         ),
-        TextField(
+        const SizedBox(height: 10),
+        CupertinoTextField(
           controller: _priorityController,
           keyboardType: TextInputType.number,
-          decoration: const InputDecoration(hintText: 'Priority from 1 to 5'),
+          placeholder: 'Priority from 1 to 5',
+          onEditingComplete: () => _tryAddNewTodo(context),
         ),
-        ElevatedButton(
-            style: ElevatedButton.styleFrom(primary: Colors.blue),
-            onPressed: () => canAdd()
-                ? widget.addTodoFn(_textController.text, int.parse(_priorityController.text))
-                : null,
-            child: const Text('Add'))
+        const SizedBox(height: 20),
+        CupertinoButton(
+          padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+          onPressed: () => _tryAddNewTodo(context),
+          child: const Text('Add'),
+          color: Colors.blue,
+        ),
+        const SizedBox(height: 10),
       ],
     );
+  }
+
+  void _tryAddNewTodo(BuildContext ctx) {
+    if (canAdd()) {
+      widget.addTodoFn(_textController.text, int.parse(_priorityController.text), ctx);
+    }
   }
 }
