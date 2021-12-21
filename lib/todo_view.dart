@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:my_todo_flutter/models/todo_model.dart';
 import 'package:my_todo_flutter/services/todo_repository.dart';
@@ -14,15 +15,14 @@ class TodoView extends StatefulWidget {
 class _TodoViewState extends State<TodoView> {
   final TodoRepository _todoRepository = TodoRepository.instance;
   int _selectedTab = 0;
+  bool _ascending = true;
   final textController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _todoRepository
-        .addNewItem(TodoModel(id: 0, text: 'Test todo', priority: 1));
-    _todoRepository
-        .addNewItem(TodoModel(id: 1, text: 'Test todo2', priority: 2));
+    _todoRepository.addNewItem(TodoModel(id: 0, text: 'Test todo', priority: 1));
+    _todoRepository.addNewItem(TodoModel(id: 1, text: 'Test todo2', priority: 2));
   }
 
   @override
@@ -30,6 +30,19 @@ class _TodoViewState extends State<TodoView> {
     return Scaffold(
         appBar: AppBar(
           title: const Text('My TODO'),
+          actions: [
+            CupertinoButton(
+                child: Icon(
+                  _ascending ? CupertinoIcons.sort_down : CupertinoIcons.sort_up,
+                  color: Colors.white,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _ascending = !_ascending;
+                    _todoRepository.changeSorting(_ascending);
+                  });
+                })
+          ],
         ),
         body: StreamBuilder<List<TodoModel>>(
             stream: _todoRepository.todos$,
@@ -38,12 +51,9 @@ class _TodoViewState extends State<TodoView> {
             }),
         bottomNavigationBar: BottomNavigationBar(
           items: [
-            const BottomNavigationBarItem(
-                icon: Icon(Icons.add, size: 20), label: 'Todo'),
-            const BottomNavigationBarItem(
-                icon: Icon(Icons.done, size: 20), label: 'Done'),
-            const BottomNavigationBarItem(
-                icon: Icon(Icons.list, size: 20), label: 'All'),
+            const BottomNavigationBarItem(icon: Icon(Icons.add, size: 20), label: 'Todo'),
+            const BottomNavigationBarItem(icon: Icon(Icons.done, size: 20), label: 'Done'),
+            const BottomNavigationBarItem(icon: Icon(Icons.list, size: 20), label: 'All'),
           ].toList(),
           currentIndex: _selectedTab,
           onTap: (int idx) {

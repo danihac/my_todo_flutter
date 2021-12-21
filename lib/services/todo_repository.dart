@@ -6,6 +6,7 @@ class TodoRepository {
 
   final List<TodoModel> _todos = [];
   int _selectedFilter = 0;
+  bool _ascending = true;
 
   final todos$ = BehaviorSubject<List<TodoModel>>();
 
@@ -14,6 +15,7 @@ class TodoRepository {
 
     _todos.add(todo);
     todos$.add(_todos);
+    _sortList();
   }
 
   void markAsDone(int id) {
@@ -41,5 +43,17 @@ class TodoRepository {
         todos$.add(_todos);
         break;
     }
+    _sortList();
+  }
+
+  void changeSorting(bool ascending) {
+    _ascending = ascending;
+    _sortList();
+  }
+
+  void _sortList(){
+    var data = todos$.value;
+    data.sort((a,b) => _ascending ? a.priority.compareTo(b.priority) : b.priority.compareTo(a.priority));
+    todos$.add(data);
   }
 }
