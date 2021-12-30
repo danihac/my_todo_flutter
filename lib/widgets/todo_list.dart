@@ -9,11 +9,17 @@ class TodoList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-        itemCount: todos.length,
-        shrinkWrap: true,
-        itemBuilder: (BuildContext context, int index) {
-          return TodoItem(todo: todos.elementAt(index));
-        });
+    return Column(
+      children: [
+        ListView.builder(
+            itemCount: todos.length,
+            shrinkWrap: true,
+            itemBuilder: (BuildContext context, int index) {
+              return TodoItem(
+                todo: todos.elementAt(index),
+              );
+            }),
+      ],
+    );
   }
 }

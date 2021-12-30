@@ -10,16 +10,19 @@ class TodoRepository {
   static final instance = TodoRepository();
 
   final List<TodoModel> _todos = [];
-  int _selectedFilter = 0;
+  List<TodoModel> _todosFiltered = [];
+  final List<String> _filters = [];
+
+  int _selectedTab = 0;
   bool _ascending = true;
   SortBy _sortBy = SortBy.date;
 
   final todos$ = BehaviorSubject<List<TodoModel>>();
+  final filters$ = BehaviorSubject<List<String>>();
 
   void addNewItem(TodoModel todo) {
     _todos.add(todo);
-    todos$.add(_todos);
-    _sortListBy();
+    updateTodoState();
   }
 
   void markAsDone(String id) {
@@ -28,23 +31,36 @@ class TodoRepository {
     updateTodoState();
   }
 
-  void filter(int idx) {
-    _selectedFilter = idx;
+  void changeTab(int idx) {
+    _selectedTab = idx;
+    updateTodoState();
+  }
+
+  void addNewFilter(String tag){
+    _filters.add(tag);
+    filters$.add(_filters);
+    updateTodoState();
+  }
+
+  void removeFilter(String tag){
+    _filters.remove(tag);
+    filters$.add(_filters);
     updateTodoState();
   }
 
   void updateTodoState() {
-    switch (_selectedFilter) {
+    _updateFilteredList();
+    switch (_selectedTab) {
       case 0:
         todos$.add(
-            _todos.where((element) => element.isComplete == false).toList());
+            _todosFiltered.where((element) => element.isComplete == false).toList());
         break;
       case 1:
         todos$.add(
-            _todos.where((element) => element.isComplete == true).toList());
+            _todosFiltered.where((element) => element.isComplete == true).toList());
         break;
       case 2:
-        todos$.add(_todos);
+        todos$.add(_todosFiltered);
         break;
     }
     _sortListBy();
@@ -78,5 +94,12 @@ class TodoRepository {
     var data = todos$.value;
     data.sort((a,b) => _ascending ? a.created.compareTo(b.created) : b.created.compareTo(a.created));
     todos$.add(data);
+  }
+
+  void _updateFilteredList(){
+    _todosFiltered = [..._todos];
+    for (var filter in _filters) {
+      _todosFiltered = _todosFiltered.where((element) => element.tags.contains(filter)).toList();
+    }
   }
 }

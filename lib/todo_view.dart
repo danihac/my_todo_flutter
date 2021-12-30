@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:my_todo_flutter/models/todo_model.dart';
 import 'package:my_todo_flutter/services/todo_repository.dart';
 import 'package:my_todo_flutter/widgets/todo_add_new.dart';
+import 'package:my_todo_flutter/widgets/todo_filter_bar.dart';
 import 'package:my_todo_flutter/widgets/todo_list.dart';
 
 class TodoView extends StatefulWidget {
@@ -35,7 +36,9 @@ class _TodoViewState extends State<TodoView> {
           actions: [
             CupertinoButton(
                 child: Icon(
-                  _ascending ? CupertinoIcons.sort_down_circle_fill : CupertinoIcons.sort_up_circle_fill,
+                  _ascending
+                      ? CupertinoIcons.sort_down_circle_fill
+                      : CupertinoIcons.sort_up_circle_fill,
                   color: Colors.white,
                 ),
                 onPressed: () {
@@ -57,11 +60,27 @@ class _TodoViewState extends State<TodoView> {
                 })
           ],
         ),
-        body: StreamBuilder<List<TodoModel>>(
-            stream: _todoRepository.todos$,
-            builder: (_, stream) {
-              return TodoList(todos: stream.data ?? []);
-            }),
+        body: Column(
+          children: [
+            // TodoFilterBar(
+            //   filters: _todoRepository.filters,
+            //   removeTag: _todoRepository.removeFilter,
+            // )
+            StreamBuilder<List<String>>(
+                stream: _todoRepository.filters$,
+                builder: (_, stream) {
+                  return TodoFilterBar(
+                    filters: stream.data ?? [],
+                    removeTag: _todoRepository.removeFilter,
+                  );
+                }),
+            StreamBuilder<List<TodoModel>>(
+                stream: _todoRepository.todos$,
+                builder: (_, stream) {
+                  return TodoList(todos: stream.data ?? []);
+                }),
+          ],
+        ),
         bottomNavigationBar: BottomNavigationBar(
           items: [
             const BottomNavigationBarItem(icon: Icon(Icons.add, size: 20), label: 'Todo'),
@@ -110,7 +129,7 @@ class _TodoViewState extends State<TodoView> {
   void _onItemTapped(int index) {
     setState(() {
       _selectedTab = index;
-      _todoRepository.filter(index);
+      _todoRepository.changeTab(index);
     });
   }
 }

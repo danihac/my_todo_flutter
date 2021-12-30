@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:my_todo_flutter/models/todo_model.dart';
 import 'package:my_todo_flutter/services/todo_repository.dart';
+import 'package:my_todo_flutter/widgets/todo_manage_tags.dart';
 
 class TodoItem extends StatefulWidget {
   final TodoModel todo;
@@ -40,13 +41,7 @@ class _TodoItemState extends State<TodoItem> {
             ),
           ),
           Expanded(
-            child: InkWell(
-                onTap: () {
-                  setState(() {
-                    _editMode = true;
-                  });
-                },
-                child: _textWidget()),
+            child: _textWidget(),
           ),
           IconButton(
             onPressed: () => _markAsDone(),
@@ -85,10 +80,22 @@ class _TodoItemState extends State<TodoItem> {
               )
             ],
           )
-        : Text(
-            widget.todo.text,
-            style:
-                TextStyle(fontWeight: widget.todo.isComplete ? FontWeight.normal : FontWeight.bold),
+        : Row(
+            children: [
+              InkWell(
+                onTap: () {
+                  setState(() {
+                    _editMode = true;
+                  });
+                },
+                child: Text(
+                  widget.todo.text,
+                  style: TextStyle(
+                      fontWeight: widget.todo.isComplete ? FontWeight.normal : FontWeight.bold),
+                ),
+              ),
+              _tagsView()
+            ],
           );
   }
 
@@ -108,5 +115,59 @@ class _TodoItemState extends State<TodoItem> {
 
   void _markAsDone() {
     _todoRepository.markAsDone(widget.todo.id);
+  }
+
+  Widget _tagsView() {
+    return Row(
+      children: [
+        IconButton(
+          onPressed: () => _manageTags(widget.todo, context),
+          icon: const Icon(Icons.tag),
+          color: Colors.grey,
+        ),
+        ...widget.todo.tags.map((e) => _tagView(e)).toList()
+      ],
+    );
+  }
+
+  Widget _tagView(String tag) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 8.0),
+      child: TextButton(
+        child: Text(tag),
+        onPressed: () => _todoRepository.addNewFilter(tag),
+      ),
+    );
+  }
+
+  void _manageTags(TodoModel todo, BuildContext ctx) {
+    showModalBottomSheet(
+        context: ctx,
+        isScrollControlled: true,
+        builder: (context) {
+          return Padding(
+            padding: MediaQuery.of(context).viewInsets,
+            child: Container(
+              padding: const EdgeInsets.all(20),
+              child: TodoManageTagsView(
+                tags: todo.tags,
+                removeTag: _removeTag,
+                addTag: _addTag,
+              ),
+            ),
+          );
+        });
+  }
+
+  void _removeTag(String tag) {
+    setState(() {
+      widget.todo.tags.remove(tag);
+    });
+  }
+
+  void _addTag(String tag) {
+    setState(() {
+      widget.todo.tags.add(tag);
+    });
   }
 }
