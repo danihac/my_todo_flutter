@@ -21,8 +21,10 @@ class _TodoViewState extends State<TodoView> {
   @override
   void initState() {
     super.initState();
-    _todoRepository.addNewItem(TodoModel(id: 0, text: 'Test todo', priority: 1));
-    _todoRepository.addNewItem(TodoModel(id: 1, text: 'Test todo2', priority: 2));
+    _todoRepository.addNewItem(TodoModel.createNew('Test todo', 1));
+    _todoRepository.addNewItem(TodoModel.createNew('Test todo 2', 2));
+    _todoRepository.addNewItem(TodoModel.createNew('Test todo 3', 5));
+    _todoRepository.addNewItem(TodoModel.createNew('Test todo 4', 3));
   }
 
   @override
@@ -33,13 +35,24 @@ class _TodoViewState extends State<TodoView> {
           actions: [
             CupertinoButton(
                 child: Icon(
+                  _ascending ? CupertinoIcons.sort_down_circle_fill : CupertinoIcons.sort_up_circle_fill,
+                  color: Colors.white,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _ascending = !_ascending;
+                    _todoRepository.changeSorting(ascending: _ascending, sortByCreateDate: false);
+                  });
+                }),
+            CupertinoButton(
+                child: Icon(
                   _ascending ? CupertinoIcons.sort_down : CupertinoIcons.sort_up,
                   color: Colors.white,
                 ),
                 onPressed: () {
                   setState(() {
                     _ascending = !_ascending;
-                    _todoRepository.changeSorting(_ascending);
+                    _todoRepository.changeSorting(ascending: _ascending, sortByCreateDate: true);
                   });
                 })
           ],
@@ -69,7 +82,7 @@ class _TodoViewState extends State<TodoView> {
 
   void _addNewTask(String text, int priority, BuildContext ctx) {
     // TODO: add animation
-    _todoRepository.addNewItem(TodoModel(text: text, priority: priority));
+    _todoRepository.addNewItem(TodoModel.createNew(text, priority));
     Navigator.of(ctx).pop();
   }
 

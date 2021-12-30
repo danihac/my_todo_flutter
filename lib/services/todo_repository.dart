@@ -1,24 +1,28 @@
 import 'package:my_todo_flutter/models/todo_model.dart';
 import 'package:rxdart/rxdart.dart';
 
+enum SortBy {
+  priority,
+  date
+}
+
 class TodoRepository {
   static final instance = TodoRepository();
 
   final List<TodoModel> _todos = [];
   int _selectedFilter = 0;
   bool _ascending = true;
+  SortBy _sortBy = SortBy.date;
 
   final todos$ = BehaviorSubject<List<TodoModel>>();
 
   void addNewItem(TodoModel todo) {
-    todo.id = _todos.length;
-
     _todos.add(todo);
     todos$.add(_todos);
-    _sortList();
+    _sortListBy();
   }
 
-  void markAsDone(int id) {
+  void markAsDone(String id) {
     var myTodo = _todos.firstWhere((element) => element.id == id);
     myTodo.isComplete = !myTodo.isComplete;
     updateTodoState();
@@ -43,17 +47,36 @@ class TodoRepository {
         todos$.add(_todos);
         break;
     }
-    _sortList();
+    _sortListBy();
   }
 
-  void changeSorting(bool ascending) {
+  void changeSorting({ required bool ascending, bool sortByCreateDate = true}) {
     _ascending = ascending;
-    _sortList();
+    if(sortByCreateDate && _sortBy == SortBy.priority){
+      _sortBy = SortBy.date;
+    } else if (!sortByCreateDate && _sortBy == SortBy.date) {
+      _sortBy = SortBy.priority;
+    }
+    _sortListBy();
   }
 
-  void _sortList(){
+  void _sortListBy(){
+    if(_sortBy == SortBy.date){
+      _sortListByDate();
+    } else {
+      _sortListByPriority();
+    }
+  }
+
+  void _sortListByPriority(){
     var data = todos$.value;
     data.sort((a,b) => _ascending ? a.priority.compareTo(b.priority) : b.priority.compareTo(a.priority));
+    todos$.add(data);
+  }
+
+  void _sortListByDate(){
+    var data = todos$.value;
+    data.sort((a,b) => _ascending ? a.created.compareTo(b.created) : b.created.compareTo(a.created));
     todos$.add(data);
   }
 }
