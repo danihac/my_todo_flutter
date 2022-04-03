@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:my_todo_flutter/bloc/todo_bloc.dart';
 import 'package:my_todo_flutter/models/todo_model.dart';
 import 'package:my_todo_flutter/services/todo_repository.dart';
 import 'package:my_todo_flutter/widgets/todo_manage_tags.dart';
@@ -14,7 +16,7 @@ class TodoItem extends StatefulWidget {
 }
 
 class _TodoItemState extends State<TodoItem> {
-  final TodoRepository _todoRepository = TodoRepository.instance;
+  // final TodoRepository _todoRepository = TodoRepository.instance;
   final TextEditingController _controller = TextEditingController();
   bool _editMode = false;
 
@@ -114,7 +116,7 @@ class _TodoItemState extends State<TodoItem> {
   }
 
   void _markAsDone() {
-    _todoRepository.markAsDone(widget.todo.id);
+    BlocProvider.of<TodoBloc>(context).add(TodoEvent.toggleStatus(taskId: widget.todo.id));
   }
 
   Widget _tagsView() {
@@ -135,7 +137,9 @@ class _TodoItemState extends State<TodoItem> {
       padding: const EdgeInsets.only(right: 8.0),
       child: TextButton(
         child: Text(tag),
-        onPressed: () => _todoRepository.addNewFilter(tag),
+        onPressed: () {
+          BlocProvider.of<TodoBloc>(context).add(TodoEvent.addNewFilter(filter: tag));
+        },
       ),
     );
   }
