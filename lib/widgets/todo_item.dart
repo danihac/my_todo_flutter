@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:my_todo_flutter/bloc/todo_bloc.dart';
 import 'package:my_todo_flutter/models/todo_model.dart';
-import 'package:my_todo_flutter/services/todo_repository.dart';
 import 'package:my_todo_flutter/widgets/todo_manage_tags.dart';
 
 class TodoItem extends StatefulWidget {
@@ -37,7 +36,9 @@ class _TodoItemState extends State<TodoItem> {
             child: Text(
               widget.todo.priority.toString(),
               style: TextStyle(
-                fontWeight: widget.todo.priority < 3 ? FontWeight.bold : FontWeight.normal,
+                fontWeight: widget.todo.priority < 3
+                    ? FontWeight.bold
+                    : FontWeight.normal,
                 fontSize: 15,
               ),
             ),
@@ -47,7 +48,8 @@ class _TodoItemState extends State<TodoItem> {
           ),
           IconButton(
             onPressed: () => _markAsDone(),
-            icon: Icon(widget.todo.isComplete ? Icons.done : Icons.circle_outlined),
+            icon: Icon(
+                widget.todo.isComplete ? Icons.done : Icons.circle_outlined),
             color: widget.todo.isComplete ? Colors.green : Colors.grey,
           ),
         ],
@@ -93,7 +95,9 @@ class _TodoItemState extends State<TodoItem> {
                 child: Text(
                   widget.todo.text,
                   style: TextStyle(
-                      fontWeight: widget.todo.isComplete ? FontWeight.normal : FontWeight.bold),
+                      fontWeight: widget.todo.isComplete
+                          ? FontWeight.normal
+                          : FontWeight.bold),
                 ),
               ),
               _tagsView()
@@ -116,7 +120,8 @@ class _TodoItemState extends State<TodoItem> {
   }
 
   void _markAsDone() {
-    BlocProvider.of<TodoBloc>(context).add(TodoEvent.toggleStatus(taskId: widget.todo.id));
+    BlocProvider.of<TodoBloc>(context)
+        .add(TodoEvent.toggleStatus(taskId: widget.todo.id));
   }
 
   Widget _tagsView() {
@@ -138,7 +143,8 @@ class _TodoItemState extends State<TodoItem> {
       child: TextButton(
         child: Text(tag),
         onPressed: () {
-          BlocProvider.of<TodoBloc>(context).add(TodoEvent.addNewFilter(filter: tag));
+          BlocProvider.of<TodoBloc>(context)
+              .add(TodoEvent.addNewFilter(filter: tag));
         },
       ),
     );

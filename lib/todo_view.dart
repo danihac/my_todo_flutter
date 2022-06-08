@@ -70,9 +70,12 @@ class _TodoViewState extends State<TodoView> {
         ),
         bottomNavigationBar: BottomNavigationBar(
           items: [
-            const BottomNavigationBarItem(icon: Icon(Icons.add, size: 20), label: 'Todo'),
-            const BottomNavigationBarItem(icon: Icon(Icons.done, size: 20), label: 'Done'),
-            const BottomNavigationBarItem(icon: Icon(Icons.list, size: 20), label: 'All'),
+            const BottomNavigationBarItem(
+                icon: Icon(Icons.add, size: 20), label: 'Todo'),
+            const BottomNavigationBarItem(
+                icon: Icon(Icons.done, size: 20), label: 'Done'),
+            const BottomNavigationBarItem(
+                icon: Icon(Icons.list, size: 20), label: 'All'),
           ].toList(),
           currentIndex: _selectedTab,
           onTap: (int idx) {
@@ -92,10 +95,9 @@ class _TodoViewState extends State<TodoView> {
     // BlocProvider.of<TodoBloc>(context).add(TodoEvent.removeFilter(filter: tag));
   }
 
-  void _addNewTask(String text, int priority, BuildContext ctx) {
-    BlocProvider.of<TodoBloc>(context)
-        .add(TodoEvent.addTask(task: TodoModel.createNew(text, priority)));
-    Navigator.of(ctx).pop();
+  void _addNewTask(TodoModel newTask) {
+    BlocProvider.of<TodoBloc>(context).add(TodoEvent.addTask(task: newTask));
+    Navigator.of(context).pop();
   }
 
   void _startAddingNewTask(BuildContext ctx) {
@@ -111,7 +113,9 @@ class _TodoViewState extends State<TodoView> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  TodoAddNewItem(addTodoFn: _addNewTask),
+                  TodoAddNewItem(
+                    onAddTodoCallback: _addNewTask,
+                  ),
                 ],
               ),
             ),
@@ -119,7 +123,8 @@ class _TodoViewState extends State<TodoView> {
         });
   }
 
-  void _changeSorting({required bool ascending, required bool sortByCreateDate}) {
+  void _changeSorting(
+      {required bool ascending, required bool sortByCreateDate}) {
     BlocProvider.of<TodoBloc>(context).add(TodoEvent.changeSorting(
       ascending: ascending,
       sortBy: sortByCreateDate ? SortBy.date : SortBy.priority,
@@ -140,7 +145,8 @@ class _TodoViewState extends State<TodoView> {
 
     setState(() {
       _selectedTab = index;
-      BlocProvider.of<TodoBloc>(context).add(TodoEvent.changeViewStatus(showStatus: status));
+      BlocProvider.of<TodoBloc>(context)
+          .add(TodoEvent.changeViewStatus(showStatus: status));
     });
   }
 }

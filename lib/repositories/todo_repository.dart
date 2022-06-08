@@ -7,7 +7,7 @@ class TodoRepository {
   final List<TodoModel> _todos = [];
 
   List<TodoModel> getTodos(TodoState state) {
-    print('Get todos state: $state');
+    // print('Get todos state: $state');
     var _todosFiltered = [..._todos];
     _updateFilteredList(_todosFiltered, state.filters);
     _todosFiltered = _filterTodosStatus(_todosFiltered, state.showStatus);
@@ -43,9 +43,13 @@ class TodoRepository {
   ) {
     switch (tabStatus) {
       case TodoStatus.todo:
-        return todosFiltered.where((element) => element.isComplete == false).toList();
+        return todosFiltered
+            .where((element) => element.isComplete == false)
+            .toList();
       case TodoStatus.done:
-        return todosFiltered.where((element) => element.isComplete == true).toList();
+        return todosFiltered
+            .where((element) => element.isComplete == true)
+            .toList();
       case TodoStatus.all:
         return todosFiltered;
     }
@@ -60,13 +64,15 @@ class TodoRepository {
   }
 
   void _sortListByPriority(List<TodoModel> todos, bool ascending) {
-    todos.sort(
-        (a, b) => ascending ? a.priority.compareTo(b.priority) : b.priority.compareTo(a.priority));
+    todos.sort((a, b) => ascending
+        ? a.priority.compareTo(b.priority)
+        : b.priority.compareTo(a.priority));
   }
 
   void _sortListByDate(List<TodoModel> todos, bool ascending) {
-    todos.sort(
-        (a, b) => ascending ? a.created.compareTo(b.created) : b.created.compareTo(a.created));
+    todos.sort((a, b) => ascending
+        ? a.created.compareTo(b.created)
+        : b.created.compareTo(a.created));
   }
 
   void _updateFilteredList(List<TodoModel> todos, List<String> filters) {

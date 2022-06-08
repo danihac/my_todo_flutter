@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class TodoFilterBar extends StatelessWidget {
@@ -19,6 +18,9 @@ class TodoFilterBar extends StatelessWidget {
   }
 
   Widget _filterView(String filter) {
-    return ActionChip(label: Text(filter), onPressed: () => removeTag(filter),);
+    return ActionChip(
+      label: Text(filter),
+      onPressed: () => removeTag(filter),
+    );
   }
 }
